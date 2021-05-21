@@ -10,6 +10,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -24,14 +26,17 @@ import androidx.fragment.app.FragmentActivity;
 import java.io.File;
 import java.util.List;
 
-import fz.vrd.utils.BuildConfig;
 
 /**
- * app常用和系统有关的工具类
+ * <b>类名称或说明：app常用和系统有关的工具类  <br/>
+ * <b>创建人： Administrator <br/>
+ * <b>时间： 2021/5/13 17:11<br/>
+ * <b>修改备注：{ } <br/>
  */
+
 public class AppUtils {
 
-   static String TAG = AppUtils.class.getName();
+    static String TAG = AppUtils.class.getName();
 
     public static int getPhoneW(Context context) {
 
@@ -147,6 +152,7 @@ public class AppUtils {
 
     /**
      * 验证是是否有安装apk权限
+     *
      * @param activity
      * @return 如果没有权限
      */
@@ -159,6 +165,7 @@ public class AppUtils {
 
     /**
      * 拨打电话
+     *
      * @param activity
      * @param tel
      */
@@ -175,17 +182,18 @@ public class AppUtils {
 
     /**
      * 打开系统照相机的方法
+     *
      * @param outPath
      * @param appId_fileprovider : com.xx.xx.fileprovider
      */
-    public static void openCamera(FragmentActivity activity, String outPath,String appId_fileprovider, int requestcode) {
+    public static void openCamera(FragmentActivity activity, String outPath, String appId_fileprovider, int requestcode) {
         if (FileUtils.existSDCard()) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             Uri imageUri = null;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 imageUri = Uri.fromFile(new File(outPath));
             } else {
-                 //fileprovider  是在清单文件中provider的配置项
+                //fileprovider  是在清单文件中provider的配置项
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 imageUri = FileProvider.getUriForFile(activity, appId_fileprovider, new File(outPath));
 
@@ -193,7 +201,7 @@ public class AppUtils {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             activity.startActivityForResult(intent, requestcode);
         } else {
-            Toast.makeText(activity,"请确认已经插入SD卡",Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "请确认已经插入SD卡", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -219,6 +227,7 @@ public class AppUtils {
 
     /**
      * 调用手机系统裁剪功能(部分手机有问题)
+     *
      * @param act
      * @param uri
      * @param outputUri
@@ -245,16 +254,6 @@ public class AppUtils {
      * 调用手机安装的App打开文件
      */
     public static void openFileToIntent(FragmentActivity activity, File file) {
-//        Intent intent = new Intent(Intent.ACTION_VIEW);
-//        intent.addCategory(Intent.CATEGORY_DEFAULT);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        Uri uri = Uri.fromFile(new File(url));
-//        MimeTypeMap map = MimeTypeMap.getSingleton();
-//        String type = map.getMimeTypeFromExtension(MimeTypeMap
-//                .getFileExtensionFromUrl(url));
-//        intent.setDataAndType(uri, type);
-//        context.startActivity(intent);
-
         try {
             Uri uri = null;
             if (Build.VERSION.SDK_INT >= 24) {
@@ -270,8 +269,27 @@ public class AppUtils {
             activity.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG,"==openFileToIntent===" + e.getMessage());
+            Log.e(TAG, "==openFileToIntent===" + e.getMessage());
         }
+    }
+
+    public static int getNetWorkState(Context context) {
+        // 得到连接管理器对象
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+
+            if (activeNetworkInfo.getType() == (ConnectivityManager.TYPE_WIFI)) {
+                return 1;//wifi
+            } else if (activeNetworkInfo.getType() == (ConnectivityManager.TYPE_MOBILE)) {
+                return 0;//手机
+            }
+        } else {
+            return -1;
+        }
+        return -1;
     }
 
 }
