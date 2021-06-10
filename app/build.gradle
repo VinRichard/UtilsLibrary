@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
@@ -26,8 +28,21 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.preference:preference:1.1.1'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+
+
+    if("${CUR_LIB_MODE}" == 0){
+        implementation project(path: ':library')
+    }else if("${CUR_LIB_MODE}" == 3){
+        implementation 'io.github.vinrichard:utils:'+"${UTILS_VERSION}"+'-SNAPSHOT'
+    }else if("${CUR_LIB_MODE}" == 1 || "${CUR_LIB_MODE}" == 2){
+        implementation 'io.github.vinrichard:utils:'+"${UTILS_VERSION}"
+    }
+
 
 }

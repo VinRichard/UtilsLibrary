@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }
@@ -15,10 +16,18 @@ buildscript {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
+
+        if("${CUR_LIB_MODE}" == 1){
+            maven {
+                url "${LOCALPATH}"
+            }
+        }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

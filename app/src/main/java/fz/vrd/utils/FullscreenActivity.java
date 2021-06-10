@@ -1,14 +1,25 @@
 package fz.vrd.utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import fz.vrd.library.aes.E_DncryptionFactory;
+import fz.vrd.library.bitmap.ImageLoaderFactory;
+import fz.vrd.library.log.LogFactory;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -97,25 +108,37 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_fullscreen);
-
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
+                Intent intent = new Intent(FullscreenActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
+        String permissions[] = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        for (String per : permissions) {
+            if (ContextCompat.checkSelfPermission(this, per) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(permissions, 100);
+                break;
+            }
+        }
+
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        String d = E_DncryptionFactory.createBase64().encryption("123456");
+        Log.e("a", "=========encryption:" + d);
+        String dd = E_DncryptionFactory.createBase64().decryption(d);
+        Log.d("a", "=========decryption:" + dd);
+
+//        LogFactory.getInstance().build(new MyLog());
+
+        LogFactory.getInstance().e("======LogFactory===========");
     }
 
     @Override

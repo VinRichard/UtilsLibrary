@@ -1,5 +1,20 @@
 apply plugin: 'com.android.library'
 
+
+def LibSendToLocal = ('${CUR_LIB_MODE}' != 2 || '${CUR_LIB_MODE}' != 3)
+
+if(LibSendToLocal){
+    apply plugin: 'maven'
+}else {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+    task generateSourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier 'sources'
+    }
+}
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
@@ -10,7 +25,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -24,9 +38,76 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+
+//    implementation 'org.greenrobot:eventbus:3.2.0'
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    implementation 'com.orhanobut:logger:2.2.0'
+}
+
+if(LibSendToLocal){
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.groupId = "${UTILS_GROUP_ID}" // 唯一标识（通常为模块包名，也可以任意）
+                pom.artifactId = "${UTILS_ARTIFACT_ID}" // 项目名称（通常为类库模块名称，也可以任意）
+                pom.version = "${UTILS_VERSION}" // 版本号
+                pom.packaging = "${UTILS_PACK}"
+
+//                repository(url: uri("D://java/Maven/android_repository")) // 配置本地仓库路径，项目根目录下的repository目录中
+                repository(url: uri("${LOCALPATH}")) // 配置本地仓库路径，项目根目录下的repository目录中
+            }
+        }
+    }
+}else{
+    def versionName = "${UTILS_MAVEN_URL}"
+    if('${CUR_LIB_MODE}' == 3){
+        versionName+="-SNAPSHOT"
+    }
+
+    def MAVEN_URL_RELEASES = "${NEXUS_UTILS_URL}" + "/releases"
+    def MAVEN_URL_SNAPSHOTS = "${NEXUS_UTILS_URL}" + "/snapshots"
+
+    afterEvaluate {
+        publishing {
+            publications {
+                Production(MavenPublication) {
+                    from components.release
+                    groupId = "${UTILS_GROUP_ID}"
+                    artifactId = "${UTILS_ARTIFACT_ID}"
+
+                    version = versionName
+
+                    afterEvaluate {
+                        artifact(tasks.getByName("bundleReleaseAar"))
+                    }
+                    // 上传source，这样使用放可以看到方法注释
+                    artifact generateSourcesJar
+                }
+            }
+
+            repositories {
+
+                maven {
+                    // 可以有且仅有一个仓库不指定 name 属性，会隐式设置为 Maven
+                    name = "maven"
+                    url = versionName.endsWith('SNAPSHOT') ? MAVEN_URL_SNAPSHOTS : MAVEN_URL_RELEASES
+                    // 仓库用户名密码
+                    credentials {
+                        username = "${NEXUS_USERNAME}"
+                        password = "${NEXUS_PASSWORD}"
+                    }
+                }
+
+                maven {
+                    name = "nexus"
+                    url = "${LOCALPATH}"
+                }
+
+            }
+        }
+    }
 }
