@@ -1,4 +1,4 @@
-package fz.vrd.library.utils;
+package fz.vrd.library.page;
 
 
 import android.util.Log;
@@ -13,13 +13,13 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- * @类功能说明:(Fragment的一些常用方法封装)
- * @author yff
- * @date 2016年10月18日 下午2:32:03
- * @version V2.0
- */
+ 
+  /**
+   * <b>类名称或说明：  <br/>
+   * <b>创建人： Administrator <br/>
+   * <b>时间： 2021/6/10 14:26<br/>
+   * <b>说明：{ } <br/>
+   */
 public class FragmentManage {
 
 	private String TAG = FragmentManage.class.getName();

@@ -1,7 +1,10 @@
 package fz.vrd.library.bitmap;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.IdRes;
 
 import fz.vrd.library.utils.StringUtils;
 
@@ -13,15 +16,15 @@ import fz.vrd.library.utils.StringUtils;
  */
 public final class ImageLoaderFactory implements Factory {
 
-    static ImageLoaderFactory factory;
+    static ImageLoaderFactory imageLoaderFactory;
 
-    Factory imageLoaderImp;
+    Factory factory;
 
     public static ImageLoaderFactory getInstance() {
-        if (factory == null) {
-            factory = new ImageLoaderFactory();
+        if (imageLoaderFactory == null) {
+            imageLoaderFactory = new ImageLoaderFactory();
         }
-        return factory;
+        return imageLoaderFactory;
     }
 
     /**
@@ -29,28 +32,31 @@ public final class ImageLoaderFactory implements Factory {
      */
     public ImageLoaderFactory build(Factory imageLoaderImp) {
         if (imageLoaderImp == null) {
-            this.imageLoaderImp = null;
+            this.factory = null;
         } else if (!StringUtils.isEmpty(imageLoaderImp.getClass().getSimpleName())) {
-            this.imageLoaderImp = imageLoaderImp;
+            this.factory = imageLoaderImp;
         }
         return this;
     }
 
     @Override
     public void displayImage(Activity activity, String path, ImageView imageView) {
-        if (imageLoaderImp != null)
-            imageLoaderImp.displayImage(activity, path, imageView);
+        if (factory != null) {
+            factory.displayImage(activity, path, imageView);
+        }
     }
 
     @Override
     public void displayImage(Activity activity, String path, ImageView imageView, int width, int height) {
-        if (imageLoaderImp != null)
-            imageLoaderImp.displayImage(activity, path, imageView, width, height);
+        if (factory != null) {
+            factory.displayImage(activity, path, imageView, width, height);
+        }
     }
 
     @Override
     public void clearMemoryCache() {
-        if (imageLoaderImp != null)
-            imageLoaderImp.clearMemoryCache();
+        if (factory != null) {
+            factory.clearMemoryCache();
+        }
     }
 }

@@ -33,6 +33,7 @@ public class FileUtils {
 
     /**
      * 外置存储卡的路径
+     *
      * @return
      */
     public static String getExternalStorePath() {
@@ -42,11 +43,16 @@ public class FileUtils {
         return null;
     }
 
+    public static String getDownloadCacheDirectory() {
+
+        return Environment.getDownloadCacheDirectory().getPath();
+    }
+
     /**
      * 获取文件名
      */
     public static String getFileName(String pathName) {
-        if(StringUtils.isEmpty(pathName)){
+        if (StringUtils.isEmpty(pathName)) {
             return null;
         }
         int start = pathName.lastIndexOf("/");
@@ -58,19 +64,23 @@ public class FileUtils {
 
     /**
      * 在SD卡上创建文件
-     * @param dir  文件夹
-     * @param fileName  文件名
+     *
+     * @param dir      文件夹
+     * @param fileName 文件名
      */
-    public static File createFile(String dir,String fileName) {
+    public static File createFile(String dir, String fileName) {
         try {
             File file = new File(dir);
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.mkdir();
             }
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.mkdirs();
             }
-            new File(dir,fileName).createNewFile();
+            File file1 = new File(dir, fileName);
+            if (!file1.exists()) {
+                file1.createNewFile();
+            }
             return file;
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +95,7 @@ public class FileUtils {
 
     /**
      * 删除单个文件
+     *
      * @param filePath 文件名
      * @return 单个文件删除成功返回true，否则返回false
      */
@@ -106,7 +117,7 @@ public class FileUtils {
      * @return 目录删除成功返回true，否则返回false
      */
     public static boolean deleteDirectory(String dirName) {
-        if(StringUtils.isEmpty(dirName)){
+        if (StringUtils.isEmpty(dirName)) {
             return false;
         }
         //如果sPath不以文件分隔符结尾，自动添加文件分隔符
@@ -217,13 +228,10 @@ public class FileUtils {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG,"=writeAssetsFileToFile====" + e.getMessage());
+            Log.e(TAG, "=writeAssetsFileToFile====" + e.getMessage());
             return false;
         }
     }
-
-
-
 
 
 }

@@ -94,13 +94,10 @@ public class BitmapUtils {
         if (null == drawable) {
             return null;
         }
-
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
         Bitmap.Config config = (drawable.getOpacity() != PixelFormat.OPAQUE) ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-
         Bitmap bitmap = Bitmap.createBitmap(width, height, config);
-
         if (null != bitmap) {
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, width, height);
@@ -109,36 +106,12 @@ public class BitmapUtils {
         return bitmap;
     }
 
-    /**
-     * 压缩图片的方法，避免出现oom异常*
-     */
-    public Bitmap compressImage(String imagePath, int h, int w) {
-        Bitmap bitmap;
-        // 先算出图片的高宽
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imagePath, options);
-        // 缩放到最高1000像素
-        int be = 1;
-        if (options.outHeight > options.outWidth) {
-            be = (int) (options.outHeight / h);
-        } else {
-            be = (int) (options.outWidth / w);
-        }
-        if (be <= 0)
-            be = 1;
-        options.inSampleSize = be;
-        options.inJustDecodeBounds = false;
-        bitmap = BitmapFactory.decodeFile(imagePath, options);
-        return bitmap;
-    }
 
     /**
      * 判断照片角度
      */
     public static int getBitmapDegree(String path) {
         int degree = 0;
-
         ExifInterface exifInterface = null;
         try {
             exifInterface = new ExifInterface(path);
@@ -182,14 +155,15 @@ public class BitmapUtils {
         return bitmap;
     }
 
-
+    /**
+     * 压缩图片
+     */
     public static Bitmap compress(String path, int width_n, int height_n) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, options);
-        options.inSampleSize = calculateInSampleSize(options,width_n,height_n);
-
-
+        options.inSampleSize = calculateInSampleSize(options, width_n, height_n);
+        options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(path, options);
     }
 
