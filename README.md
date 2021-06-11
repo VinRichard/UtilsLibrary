@@ -1,4 +1,4 @@
-## 一.Android 7.0及以上版本,文件权限配置更新为FileProvider的方式: ##
+## 一.Android 7.0及以上版本,文件权限配置更新为FileProvider的方式:
       1. 在项目的AndroidManifest.xml添加相关配置，示例如下：
        ```
             <provider
@@ -44,3 +44,7 @@
         </manifest>
          ```
      备注:以上一和二的出处地址:https://open.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=11600155960jI9EY&version=&lang=&token=
+
+三.日志框架
+    1.https://github.com/orhanobut/logger
+    2.https://github.com/elvishew/xLog
